@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  email          String          @unique
+  password       String
+  createdAt      DateTime        @default(now())
+  resources      Resource[]
+  savedResources SavedResource[]
+  likedResources LikedResource[]
+  profile        Profile?
+  followedBy     User[]          @relation("UserFollows", fields: [followedByIDs], references: [id])
+  followedByIDs  String[]        @db.ObjectId
+  following      User[]          @relation("UserFollows", fields: [followingIDs], references: [id])
+  followingIDs   String[]        @db.ObjectId
+}
+
+model Profile {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  gender String?
+  bio    String?
+  user   User    @relation(fields: [userId], references: [id])
+  userId String  @unique @db.ObjectId
+}
+
+model Resource {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  website     String?
+  docs        String?
+  createdAt   DateTime        @default(now())
+  createdBy   User            @relation(fields: [createdById], references: [id])
+  createdById String          @db.ObjectId
+  likeCount   Int
+  savedBy     SavedResource[]
+  likedBy     LikedResource[]
+  tags        Tag[]           @relation(fields: [tagIds], references: [id])
+  tagIds      String[]        @db.ObjectId
+}
+
+model Tag {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  resources   Resource[] @relation(fields: [resourceIds], references: [id])
+  resourceIds String[]   @db.ObjectId
+}
+
+model SavedResource {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String   @db.ObjectId
+  resource   Resource @relation(fields: [resourceId], references: [id])
+  resourceId String   @db.ObjectId
+}
+
+model LikedResource {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String   @db.ObjectId
+  resource   Resource @relation(fields: [resourceId], references: [id])
+  resourceId String   @db.ObjectId
+}
+
+enum Role {
+  USER
+  ADMIN
+}
