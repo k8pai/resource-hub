@@ -1,5 +1,7 @@
 'use client';
 
+import { Resource, Tag, TagPayload, User, UserPayload } from '@prisma/client';
+import { UserArgs } from '@prisma/client/runtime';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { IconContext } from 'react-icons';
@@ -10,16 +12,13 @@ import { SiDocsdotrs } from 'react-icons/si';
 import { SlGlobe } from 'react-icons/sl';
 
 export default function PostCard({
-	postData: { title, postedBy, description, tags, docUrl, website },
+	postData: { title, description, docs, website, likeCount },
+	createdBy,
+	tags,
 }: {
-	postData: {
-		title: string;
-		postedBy?: string;
-		description: string;
-		tags: string[];
-		docUrl?: string;
-		website?: string;
-	};
+	postData: Resource;
+	createdBy: User;
+	tags: Tag[];
 }) {
 	const [state, setState] = useState({
 		isLiked: false,
@@ -27,7 +26,6 @@ export default function PostCard({
 		likeCount: 1345,
 		shareCount: 123,
 	});
-
 	const handleLike = () => {
 		setState((ref) => ({
 			...ref,
@@ -55,8 +53,10 @@ export default function PostCard({
 			<div className=" mb-2">
 				<h2 className="text-xl font-bold">{title}</h2>
 				<code className="text-xs tracking-wide">
-					{postedBy ? (
-						<Link href={`/account/${postedBy}`}>{postedBy}</Link>
+					{createdBy.email ? (
+						<Link href={`/account/${createdBy.email}`}>
+							{createdBy.email}
+						</Link>
 					) : (
 						<span>_k8pai</span>
 					)}
@@ -64,17 +64,18 @@ export default function PostCard({
 			</div>
 			<p className="text-gray-300 mb-4">{description}</p>
 			<div className="flex flex-wrap">
-				{tags.map((el, elXid) => (
+				{tags?.map((el: Tag) => (
 					<div
-						key={elXid}
-						className="rounded-md bg-[#181818] tracking-wider font-semibold text-white text-xs px-2 py-1 mx-1"
+						key={el.id}
+						className="rounded-md bg-[#181818] tracking-wider font-semibold flex items-center space-x-px text-white text-xs px-2 py-1 mx-1"
 					>
-						#{el}
+						<span>#</span>
+						<span>{el?.name}</span>
 					</div>
 				))}
 			</div>
 			<div className="w-full flex items-center justify-between py-2">
-				<span className="ml-1 text-xs">{state.likeCount}</span>
+				<span className="ml-1 text-xs">{likeCount}</span>
 				{/* <div> */}
 				{/* <span className="ml-1 text-xs"> saved</span> */}
 				<span className="ml-1 text-xs">{state.shareCount}</span>
@@ -103,9 +104,9 @@ export default function PostCard({
 					<PiShareFatFill />
 					<span className="ml-2 text-xs">Share</span>
 				</button>
-				{docUrl && (
+				{docs && (
 					<Link
-						href={docUrl}
+						href={docs}
 						className="flex-1 w-full p-2 flex justify-center rounded-md transition duration-200 ease-in text-gray-400 hover:bg-[#181818] hover:shadow-md hover:text-gray-300 mx-1"
 					>
 						<SiDocsdotrs />

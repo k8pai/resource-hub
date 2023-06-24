@@ -11,7 +11,7 @@ export default function Sidenav() {
 		{ name: 'Account', link: '/account' },
 		{ name: 'Feed', link: '/' },
 		{ name: 'Saved', link: '/saved' },
-		// { name: 'Search', link: '/search' },
+		{ name: 'Post', link: '/post' },
 		{ name: 'Tags', link: '/tags' },
 	];
 
