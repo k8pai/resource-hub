@@ -5,11 +5,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
 	try {
-		const data = await prisma.user.findMany({
-			include: {
-				profile: true,
-			},
-		});
+		const data = await prisma.user.findMany({});
 		return NextResponse.json(data);
 	} catch (error) {
 		console.log('error in server router');
@@ -19,19 +15,13 @@ export async function GET() {
 
 export async function POST(req: Request) {
 	try {
-		const { profile, email, password, createdAt } = await req.json();
-		console.log('request data = ', profile, email, password, createdAt);
+		const { name, email, createdAt } = await req.json();
+		console.log('request data = ', name, email, createdAt);
 		const data = await prisma.user.create({
 			data: {
+				name: name,
 				email: email,
-				password: password,
 				createdAt: createdAt,
-				profile: {
-					create: profile,
-				},
-			},
-			include: {
-				profile: true,
 			},
 		});
 		console.log('data = ', data);
@@ -40,6 +30,4 @@ export async function POST(req: Request) {
 		console.log('error in server router', error);
 		return NextResponse.json(error);
 	}
-
-	return NextResponse.json({ status: 'OK' });
 }
