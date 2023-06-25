@@ -3,6 +3,7 @@ import Header from '@/components/Header';
 import Sidenav from '@/components/Sidenav';
 import './globals.css';
 import { Inter } from 'next/font/google';
+import Provider from '@/components/Provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,15 +20,17 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={`bg-[#141414] text-[#ECEFF1]`}>
-				<div className="flex flex-col min-h-screen">
-					<div className="sticky top-0 w-full z-10">
-						<Header />
+				<Provider>
+					<div className="flex flex-col min-h-screen">
+						<div className="sticky top-0 w-full z-10">
+							<Header />
+						</div>
+						<div className=" h-full flex flex-1">
+							<Sidenav />
+							<section className="flex-1 p-8">{children}</section>
+						</div>
 					</div>
-					<div className=" h-full flex flex-1">
-						<Sidenav />
-						<section className="flex-1 p-8">{children}</section>
-					</div>
-				</div>
+				</Provider>
 			</body>
 		</html>
 	);
